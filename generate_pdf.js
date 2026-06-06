@@ -80,7 +80,7 @@ async function main() {
       
       body {
         font-family: 'Inter', sans-serif;
-        color: #333333;
+        color: #2b2b2b;
         line-height: 1.35;
         background-color: #ffffff;
         padding: 0;
@@ -249,6 +249,12 @@ async function main() {
         font-family: 'Montserrat', sans-serif;
       }
       
+      .callout li {
+        font-size: 7.5px !important;
+        margin-bottom: 2px !important;
+        color: #333333 !important;
+      }
+      
       /* Tables */
       table {
         width: 100% !important;
@@ -340,7 +346,7 @@ async function main() {
       }
       
       strong {
-        color: #222222;
+        color: #111111;
         font-weight: 700;
       }
       
