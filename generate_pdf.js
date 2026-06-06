@@ -81,100 +81,85 @@ async function main() {
       body {
         font-family: 'Inter', sans-serif;
         color: #333333;
-        line-height: 1.5;
+        line-height: 1.35;
         background-color: #ffffff;
         padding: 0;
       }
       
       .page {
-        padding: 10px 0px;
+        padding: 0px;
         max-width: 100% !important;
         margin: 0 auto !important;
       }
       
-      .page-title {
-        font-family: 'Montserrat', sans-serif;
-        font-weight: 800;
-        font-size: 24px;
-        color: #1B71AC;
-        text-align: center;
-        margin-top: 10px;
-        margin-bottom: 25px;
-        column-span: all;
-      }
-      
       .page-body {
-        margin-top: 15px;
-      }
-      
-      .two-columns {
+        margin-top: 0px;
         column-count: 2;
         column-gap: 28px;
-        column-fill: balance;
-        margin-bottom: 20px;
-        break-inside: auto;
+        column-fill: auto;
+      }
+      
+      .page-title-banner {
+        background-color: #2AB573;
+        color: #ffffff;
+        padding: 8px 12px;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 13px;
+        font-weight: 800;
+        text-transform: uppercase;
+        margin-bottom: 15px;
+        border-radius: 4px;
+        break-inside: avoid;
+        -webkit-column-break-inside: avoid;
+      }
+      
+      h1, h2, h3 {
+        font-family: 'Montserrat', sans-serif;
+        color: #1B71AC;
+        font-weight: 700;
+        margin-top: 15px;
+        margin-bottom: 8px;
+        break-inside: avoid;
+        -webkit-column-break-inside: avoid;
+        page-break-after: avoid;
+        break-after: avoid;
       }
       
       h1 {
-        background-color: #2AB573;
-        color: #ffffff;
-        padding: 8px 16px;
-        font-family: 'Montserrat', sans-serif;
-        font-size: 14px;
-        font-weight: 700;
+        font-size: 12px;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-top: 25px;
-        margin-bottom: 15px;
-        border-radius: 4px;
-        page-break-after: avoid;
-        break-after: avoid;
       }
       
       h2 {
-        font-family: 'Montserrat', sans-serif;
-        color: #1B71AC;
-        font-size: 12.5px;
-        font-weight: 700;
-        margin-top: 18px;
-        margin-bottom: 10px;
-        border-bottom: 1.5px solid #1B71AC;
-        padding-bottom: 4px;
-        page-break-after: avoid;
-        break-after: avoid;
+        font-size: 11px;
       }
       
       h3 {
-        font-family: 'Montserrat', sans-serif;
-        color: #1B71AC;
-        font-size: 11px;
-        font-weight: 700;
-        margin-top: 14px;
-        margin-bottom: 8px;
-        page-break-after: avoid;
-        break-after: avoid;
-      }
-      
-      p, li {
-        font-size: 10px;
-        color: #333333;
-        margin-top: 0;
+        font-size: 9.5px;
+        margin-top: 10px;
         margin-bottom: 6px;
       }
       
+      p, li {
+        font-size: 8.5px;
+        color: #333333;
+        margin-top: 0;
+        margin-bottom: 5px;
+      }
+      
       .bulleted-list, .numbered-list {
-        padding-left: 18px;
-        margin-top: 4px;
-        margin-bottom: 8px;
+        padding-left: 14px;
+        margin-top: 3px;
+        margin-bottom: 6px;
       }
       
       li {
-        margin-bottom: 4px;
+        margin-bottom: 3px;
       }
       
       li ul {
         list-style-type: circle !important;
-        padding-left: 12px;
+        padding-left: 10px;
       }
       
       /* Callouts (Knowledge Nuggets) */
@@ -182,85 +167,44 @@ async function main() {
         border: 1.5px solid #2AB573 !important;
         background-color: rgba(42, 181, 115, 0.05) !important;
         border-radius: 6px !important;
-        padding: 10px 14px !important;
-        margin: 12px 0 !important;
+        padding: 8px 10px !important;
+        margin: 10px 0 !important;
         display: flex !important;
         align-items: flex-start !important;
-        page-break-inside: avoid !important;
         break-inside: avoid !important;
+        -webkit-column-break-inside: avoid !important;
+        page-break-inside: avoid !important;
       }
       
       .callout .icon {
-        margin-right: 10px !important;
-        font-size: 16px !important;
+        margin-right: 8px !important;
+        font-size: 13px !important;
         display: inline-block !important;
-        margin-top: 2px !important;
+        margin-top: 1px !important;
       }
       
       .callout div {
-        font-size: 9.5px !important;
+        font-size: 7.5px !important;
         color: #333333 !important;
       }
       
       .callout div strong {
         color: #2AB573 !important;
         display: block;
-        font-size: 10.5px;
-        margin-bottom: 4px;
+        font-size: 8.5px;
+        margin-bottom: 3px;
         font-family: 'Montserrat', sans-serif;
-      }
-      
-      /* Table of Contents */
-      .table_of_contents {
-        background-color: #f7fafc !important;
-        border: 1px solid #e2e8f0 !important;
-        border-radius: 6px !important;
-        padding: 16px !important;
-        margin-bottom: 25px !important;
-        column-count: 2 !important;
-        column-gap: 30px !important;
-        font-family: 'Inter', sans-serif !important;
-      }
-      
-      .table_of_contents-item {
-        margin-bottom: 0 !important;
-        font-size: 10px !important;
-        line-height: 1.4 !important;
-        break-inside: avoid !important;
-      }
-      
-      .table_of_contents-indent-0 {
-        font-weight: 700 !important;
-        color: #1B71AC !important;
-      }
-      
-      .table_of_contents-indent-1 {
-        padding-left: 12px !important;
-        color: #333333 !important;
-      }
-      
-      .table_of_contents-indent-2 {
-        padding-left: 24px !important;
-        color: #666666 !important;
-      }
-      
-      .table_of_contents-indent-3 {
-        padding-left: 36px !important;
-        color: #888888 !important;
-      }
-      
-      .table_of_contents-link {
-        text-decoration: none !important;
-        border-bottom: none !important;
       }
       
       /* Tables */
       table {
         width: 100% !important;
         border-collapse: collapse !important;
-        margin: 15px 0 !important;
-        font-size: 9px !important;
+        margin: 12px 0 !important;
+        font-size: 7.5px !important;
         break-inside: avoid !important;
+        -webkit-column-break-inside: avoid !important;
+        page-break-inside: avoid !important;
       }
       
       th {
@@ -268,13 +212,13 @@ async function main() {
         color: #ffffff !important;
         font-weight: 700 !important;
         text-align: left !important;
-        padding: 6px 8px !important;
+        padding: 5px 6px !important;
         border: 1px solid #1B71AC !important;
         font-family: 'Montserrat', sans-serif;
       }
       
       td {
-        padding: 6px 8px !important;
+        padding: 5px 6px !important;
         border: 1px solid #e0e0e0 !important;
       }
       
@@ -284,14 +228,17 @@ async function main() {
       
       /* Images */
       figure.image {
-        margin: 15px 0 !important;
+        margin: 10px 0 !important;
         text-align: center !important;
         break-inside: avoid !important;
+        -webkit-column-break-inside: avoid !important;
+        page-break-inside: avoid !important;
       }
       
-      figure.image img {
-        max-width: 90% !important;
-        max-height: 180mm !important;
+      figure.image img, img {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
         object-fit: contain !important;
         border-radius: 4px !important;
         border: 1px solid #e0e0e0 !important;
@@ -303,7 +250,7 @@ async function main() {
         background-color: rgba(27, 113, 172, 0.08) !important;
         color: #1B71AC !important;
         font-weight: 600;
-        padding: 1px 3px;
+        padding: 1px 2px;
         border-radius: 2px;
       }
       
@@ -311,7 +258,7 @@ async function main() {
         color: #eb5757 !important;
         background-color: rgba(235, 87, 87, 0.06) !important;
         font-weight: 600;
-        padding: 1px 3px;
+        padding: 1px 2px;
         border-radius: 2px;
       }
       
@@ -340,7 +287,7 @@ async function main() {
         transform: translate(-50%, -50%);
         width: 550px;
         height: 550px;
-        opacity: 0.2;
+        opacity: 0.15;
         z-index: -1000;
         pointer-events: none;
         background-image: url('${watermarkLogoBase64}');
@@ -401,12 +348,12 @@ async function main() {
       waitUntil: 'networkidle0'
     });
     
-    console.log("Restructuring DOM for two-column text layout...");
+    console.log("Restructuring DOM...");
     await page.evaluate(() => {
       const pageBody = document.querySelector('.page-body');
       if (!pageBody) return;
       
-      // 1. Unwrap all display:contents wrapper divs to make DOM flat
+      // Unwrap all display:contents wrapper divs to make DOM flat
       const wrappers = Array.from(pageBody.querySelectorAll('div[style*="display:contents"]'));
       wrappers.forEach(wrapper => {
         const parent = wrapper.parentNode;
@@ -415,42 +362,6 @@ async function main() {
         }
         parent.removeChild(wrapper);
       });
-      
-      // 2. Group elements
-      const children = Array.from(pageBody.children);
-      const newChildren = [];
-      let currentGroup = [];
-      
-      function flushGroup() {
-        if (currentGroup.length > 0) {
-          const colDiv = document.createElement('div');
-          colDiv.className = 'two-columns';
-          currentGroup.forEach(child => colDiv.appendChild(child));
-          newChildren.push(colDiv);
-          currentGroup = [];
-        }
-      }
-      
-      children.forEach(child => {
-        const tagName = child.tagName.toLowerCase();
-        const isImage = child.classList.contains('image') || tagName === 'figure';
-        const isTable = tagName === 'table';
-        const isH1 = tagName === 'h1';
-        const isTOC = tagName === 'nav' || child.classList.contains('table_of_contents');
-        
-        if (isImage || isTable || isH1 || isTOC) {
-          flushGroup();
-          newChildren.push(child);
-        } else {
-          currentGroup.push(child);
-        }
-      });
-      
-      flushGroup();
-      
-      // 3. Clear and append
-      pageBody.innerHTML = '';
-      newChildren.forEach(child => pageBody.appendChild(child));
     });
 
     // Save restructured HTML back to disk for debugging/verifying
@@ -459,18 +370,18 @@ async function main() {
     
     // Header template with base64 logo
     const headerTemplate = `
-      <div style="font-family: 'Montserrat', 'Inter', sans-serif; font-size: 7px; width: 100%; display: flex; justify-content: space-between; align-items: center; border-bottom: 0.75px solid #e2e8f0; padding-bottom: 4px; padding-left: 40px; padding-right: 40px; box-sizing: border-box; -webkit-print-color-adjust: exact;">
+      <div style="font-family: 'Montserrat', 'Inter', sans-serif; font-size: 7.5px; width: 100%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #1B71AC; padding-bottom: 4px; padding-left: 40px; padding-right: 40px; box-sizing: border-box; -webkit-print-color-adjust: exact;">
         <img src="${headerLogoBase64}" style="height: 16px; object-fit: contain;" />
-        <span style="color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px;">Economic and Social Issues | Economic Growth and Development</span>
+        <span style="color: #1B71AC; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px;">Economic and Social Issues | Economic Growth and Development | 23 March 2026</span>
       </div>
     `;
     
     // Footer template
     const footerTemplate = `
-      <div style="font-family: 'Montserrat', 'Inter', sans-serif; font-size: 7px; width: 100%; display: flex; justify-content: space-between; align-items: center; border-top: 0.75px solid #e2e8f0; padding-top: 4px; padding-left: 40px; padding-right: 40px; box-sizing: border-box; -webkit-print-color-adjust: exact;">
+      <div style="font-family: 'Montserrat', 'Inter', sans-serif; font-size: 7.5px; width: 100%; display: flex; justify-content: space-between; align-items: center; border-top: 0.75px solid #e2e8f0; padding-top: 4px; padding-left: 40px; padding-right: 40px; box-sizing: border-box; -webkit-print-color-adjust: exact;">
         <span style="color: #64748b; font-weight: 500;">+91 9999466225</span>
         <span style="color: #64748b; font-weight: 600;">www.anujjindal.in</span>
-        <div style="background-color: #2AB573; color: #ffffff; padding: 2px 6px; border-radius: 2px; font-weight: 700; font-size: 8px;">
+        <div style="background-color: #2AB573; color: #ffffff; padding: 2px 6px; border-radius: 3px; font-weight: 700; font-size: 8px;">
           <span class="pageNumber"></span>
         </div>
       </div>
