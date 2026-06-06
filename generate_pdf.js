@@ -122,9 +122,6 @@ async function main() {
         column-span: all;
         -webkit-column-span: all;
         box-sizing: border-box;
-        break-before: page;
-        -webkit-column-break-before: always;
-        page-break-before: always;
       }
       
       .index-title {
@@ -297,8 +294,20 @@ async function main() {
         height: auto !important;
         object-fit: contain !important;
         border-radius: 4px !important;
-        border: 1px solid #e0e0e0 !important;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.05) !important;
+        display: inline-block !important;
+        border: none !important;
+        box-shadow: none !important;
+      }
+      
+      /* Specific image width overrides to prevent stretching of narrow/square diagrams */
+      figure.image img.img-growth, img.img-growth {
+        width: 140px !important;
+      }
+      figure.image img.img-oecd, img.img-oecd {
+        width: 110px !important;
+      }
+      figure.image img.img-composite, img.img-composite {
+        width: 110px !important;
       }
       
       /* Highlights */
@@ -359,13 +368,6 @@ async function main() {
     // Inject watermark div immediately after <body> tag
     const watermarkDiv = `<div class="watermark"></div>`;
     htmlContent = htmlContent.replace(/<body[^>]*>/, (match) => `${match}\n${watermarkDiv}`);
-    
-    // Make sure callout boxes have "Knowledge Nuggets" text properly structured
-    // In our HTML: <div style="width:100%"><strong>List of Important...</strong></div>
-    // Let's replace emoji 📌 with 🚀 and bold prefix if needed, or style it as is.
-    // The requirement says: Knowledge Nuggets box has green border, light green background, rocket icon.
-    // Let's replace pushpin 📌 with rocket 🚀 inside callouts
-    htmlContent = htmlContent.replaceAll('📌', '🚀');
     
     // Write styled HTML out
     fs.writeFileSync(OUTPUT_HTML, htmlContent, 'utf8');
