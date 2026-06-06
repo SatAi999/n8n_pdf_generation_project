@@ -81,7 +81,7 @@ async function main() {
       body {
         font-family: 'Inter', sans-serif;
         color: #333333;
-        line-height: 1.3;
+        line-height: 1.35;
         background-color: #ffffff;
         padding: 0;
       }
@@ -117,12 +117,14 @@ async function main() {
         background-color: rgba(42, 181, 115, 0.03);
         border: 1px solid rgba(42, 181, 115, 0.15);
         border-radius: 6px;
-        padding: 8px 10px;
-        margin-top: 10px;
-        margin-bottom: 0px;
+        padding: 10px 14px;
+        margin-bottom: 18px;
+        column-span: all;
+        -webkit-column-span: all;
         box-sizing: border-box;
-        break-inside: avoid;
-        -webkit-column-break-inside: avoid;
+        break-before: page;
+        -webkit-column-break-before: always;
+        page-break-before: always;
       }
       
       .index-title {
@@ -137,7 +139,7 @@ async function main() {
       
       .index-list {
         column-count: 2;
-        column-gap: 15px;
+        column-gap: 24px;
         list-style-type: none;
         padding: 0;
         margin: 0;
@@ -145,8 +147,8 @@ async function main() {
       
       .index-item {
         font-size: 7.5px;
-        line-height: 1.3;
-        margin-bottom: 2px;
+        line-height: 1.35;
+        margin-bottom: 3px;
         color: #333333;
         break-inside: avoid;
         -webkit-column-break-inside: avoid;
@@ -171,8 +173,8 @@ async function main() {
         font-family: 'Montserrat', sans-serif;
         color: #1B71AC;
         font-weight: 700;
-        margin-top: 10px;
-        margin-bottom: 4px;
+        margin-top: 15px;
+        margin-bottom: 8px;
         break-inside: avoid;
         -webkit-column-break-inside: avoid;
         page-break-after: avoid;
@@ -190,25 +192,25 @@ async function main() {
       
       h3 {
         font-size: 9.5px;
-        margin-top: 8px;
-        margin-bottom: 4px;
+        margin-top: 10px;
+        margin-bottom: 6px;
       }
       
       p, li {
         font-size: 8.5px;
         color: #333333;
         margin-top: 0;
-        margin-bottom: 4px;
+        margin-bottom: 5px;
       }
       
       .bulleted-list, .numbered-list {
         padding-left: 14px;
-        margin-top: 2px;
-        margin-bottom: 4px;
+        margin-top: 3px;
+        margin-bottom: 6px;
       }
       
       li {
-        margin-bottom: 2px;
+        margin-bottom: 3px;
       }
       
       li ul {
@@ -221,8 +223,8 @@ async function main() {
         border: 1.5px solid #2AB573 !important;
         background-color: rgba(42, 181, 115, 0.05) !important;
         border-radius: 6px !important;
-        padding: 6px 8px !important;
-        margin: 6px 0 !important;
+        padding: 8px 10px !important;
+        margin: 10px 0 !important;
         display: flex !important;
         align-items: flex-start !important;
         break-inside: avoid !important;
@@ -240,7 +242,6 @@ async function main() {
       .callout div {
         font-size: 7.5px !important;
         color: #333333 !important;
-        line-height: 1.3 !important;
       }
       
       .callout div strong {
@@ -255,7 +256,7 @@ async function main() {
       table {
         width: 100% !important;
         border-collapse: collapse !important;
-        margin: 8px 0 !important;
+        margin: 12px 0 !important;
         font-size: 7.5px !important;
         break-inside: avoid !important;
         -webkit-column-break-inside: avoid !important;
@@ -267,13 +268,13 @@ async function main() {
         color: #ffffff !important;
         font-weight: 700 !important;
         text-align: left !important;
-        padding: 4px 5px !important;
+        padding: 5px 6px !important;
         border: 1px solid #1B71AC !important;
         font-family: 'Montserrat', sans-serif;
       }
       
       td {
-        padding: 4px 5px !important;
+        padding: 5px 6px !important;
         border: 1px solid #e0e0e0 !important;
       }
       
@@ -283,7 +284,7 @@ async function main() {
       
       /* Images */
       figure.image {
-        margin: 6px 0 !important;
+        margin: 10px 0 !important;
         text-align: center !important;
         break-inside: avoid !important;
         -webkit-column-break-inside: avoid !important;
