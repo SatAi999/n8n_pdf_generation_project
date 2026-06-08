@@ -87,16 +87,21 @@ async function main() {
       }
       
       .page {
-        padding: 0px;
-        max-width: 100% !important;
-        margin: 0 auto !important;
+        width: 100% !important;
+        height: 960px !important; /* Fixed A4 printable height with safe buffer */
+        page-break-after: always !important;
+        break-after: page !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+        position: relative !important;
       }
       
       .page-body {
-        margin-top: 0px;
-        column-count: 2;
-        column-gap: 28px;
-        column-fill: auto;
+        column-count: 2 !important;
+        column-gap: 28px !important;
+        height: 100% !important;
+        column-fill: auto !important;
+        box-sizing: border-box !important;
       }
       
       .page-title-banner {
@@ -220,39 +225,43 @@ async function main() {
         border: 1.5px solid #2AB573 !important;
         background-color: rgba(42, 181, 115, 0.05) !important;
         border-radius: 6px !important;
-        padding: 8px 10px !important;
-        margin: 10px 0 !important;
-        display: flex !important;
-        align-items: flex-start !important;
+        padding: 10px 12px !important;
+        margin: 12px 0 !important;
+        display: block !important;
         break-inside: avoid !important;
         -webkit-column-break-inside: avoid !important;
         page-break-inside: avoid !important;
       }
       
-      .callout .icon {
-        margin-right: 8px !important;
-        font-size: 13px !important;
-        display: inline-block !important;
-        margin-top: 1px !important;
-      }
-      
-      .callout div {
-        font-size: 7.5px !important;
-        color: #333333 !important;
-      }
-      
-      .callout div strong {
+      .callout-header {
         color: #2AB573 !important;
-        display: block;
-        font-size: 8.5px;
-        margin-bottom: 3px;
-        font-family: 'Montserrat', sans-serif;
+        display: block !important;
+        font-size: 8.5px !important;
+        font-weight: 700 !important;
+        margin-bottom: 3px !important;
+        font-family: 'Montserrat', sans-serif !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
       }
       
-      .callout li {
+      .callout-title {
+        color: #111111 !important;
+        display: block !important;
+        font-size: 8.5px !important;
+        font-weight: 700 !important;
+        margin-bottom: 5px !important;
+        font-family: 'Montserrat', sans-serif !important;
+      }
+      
+      .callout-content {
+        font-size: 7.5px !important;
+        color: #2b2b2b !important;
+      }
+      
+      .callout-content li {
         font-size: 7.5px !important;
         margin-bottom: 2px !important;
-        color: #333333 !important;
+        color: #2b2b2b !important;
       }
       
       /* Tables */
@@ -310,7 +319,10 @@ async function main() {
         width: 140px !important;
       }
       figure.image img.img-oecd, img.img-oecd {
-        width: 110px !important;
+        width: 130px !important;
+      }
+      figure.image img.img-happiness, img.img-happiness {
+        width: 140px !important;
       }
       figure.image img.img-composite, img.img-composite {
         width: 110px !important;
@@ -406,13 +418,20 @@ async function main() {
     
     const page = await browser.newPage();
     
+    // Set viewport to match A4 printable content area (714px width, 960px height)
+    await page.setViewport({
+      width: 714,
+      height: 960,
+      deviceScaleFactor: 1
+    });
+    
     // Load local HTML
     console.log("Loading HTML in page...");
     await page.goto(`file:///${OUTPUT_HTML.replace(/\\/g, '/')}`, {
       waitUntil: 'networkidle0'
     });
     
-    console.log("Restructuring DOM...");
+    console.log("Restructuring DOM and Chunking Pages...");
     await page.evaluate(() => {
       const pageBody = document.querySelector('.page-body');
       if (!pageBody) return;
@@ -426,6 +445,169 @@ async function main() {
         }
         parent.removeChild(wrapper);
       });
+
+      // Restructure callout boxes to match "🚀 Knowledge Nuggets" layout
+      const callouts = Array.from(document.querySelectorAll('.callout'));
+      callouts.forEach(callout => {
+        const iconSpan = callout.querySelector('.icon');
+        if (iconSpan) iconSpan.remove();
+        
+        const strong = callout.querySelector('strong');
+        let titleText = '';
+        if (strong) {
+          titleText = strong.textContent.trim();
+          strong.remove();
+        }
+        
+        const header = document.createElement('div');
+        header.className = 'callout-header';
+        header.innerHTML = '🚀 Knowledge Nuggets';
+        
+        let titleEl = null;
+        if (titleText) {
+          titleEl = document.createElement('div');
+          titleEl.className = 'callout-title';
+          titleEl.textContent = titleText;
+        }
+        
+        const innerDiv = callout.querySelector('div');
+        if (innerDiv) {
+          innerDiv.className = 'callout-content';
+          if (titleEl) {
+            innerDiv.insertBefore(titleEl, innerDiv.firstChild);
+          }
+          innerDiv.insertBefore(header, innerDiv.firstChild);
+        } else {
+          if (titleEl) {
+            callout.insertBefore(titleEl, callout.firstChild);
+          }
+          callout.insertBefore(header, callout.firstChild);
+        }
+      });
+
+      // Now run the dynamic page-chunking layout engine
+      const elements = Array.from(pageBody.children);
+      
+      // Clear body
+      const body = document.body;
+      body.innerHTML = '';
+      
+      // Add watermark div (since it has position: fixed, it will repeat on every page)
+      const watermark = document.createElement('div');
+      watermark.className = 'watermark';
+      body.appendChild(watermark);
+      
+      let currentPage = null;
+      let currentPageBody = null;
+      
+      function createPage() {
+        currentPage = document.createElement('div');
+        currentPage.className = 'page';
+        
+        currentPageBody = document.createElement('div');
+        currentPageBody.className = 'page-body';
+        
+        currentPage.appendChild(currentPageBody);
+        body.appendChild(currentPage);
+      }
+      
+      createPage();
+      
+      // Helper function to check if page-body has overflowed
+      function checkOverflow() {
+        const parentRect = currentPageBody.getBoundingClientRect();
+        const children = Array.from(currentPageBody.children);
+        if (children.length === 0) return false;
+        
+        const col1Right = parentRect.left + (parentRect.width - 28) / 2;
+        
+        for (const child of children) {
+          const rect = child.getBoundingClientRect();
+          if (rect.width === 0 || rect.height === 0) continue;
+          
+          // Horizontal overflow (3rd column or beyond)
+          if (rect.right > parentRect.left + parentRect.width + 5) {
+            return true;
+          }
+          
+          // Vertical overflow (below page body bottom boundary)
+          if (rect.bottom > parentRect.bottom + 5) {
+            return true;
+          }
+        }
+        return false;
+      }
+      
+      for (let idx = 0; idx < elements.length; idx++) {
+        const el = elements[idx];
+        
+        // Skip meta, style, script, watermark
+        if (el.tagName === 'STYLE' || el.tagName === 'SCRIPT' || el.classList.contains('watermark')) {
+          body.appendChild(el);
+          continue;
+        }
+        
+        // If it is a list, we can split it item by item across pages
+        if (el.tagName === 'UL' || el.tagName === 'OL') {
+          currentPageBody.appendChild(el);
+          
+          if (checkOverflow()) {
+            // It overflowed! Let's split the list
+            currentPageBody.removeChild(el);
+            
+            const listForCurrentPage = el.cloneNode(false);
+            currentPageBody.appendChild(listForCurrentPage);
+            
+            const items = Array.from(el.children);
+            let splitIndex = -1;
+            
+            for (let i = 0; i < items.length; i++) {
+              listForCurrentPage.appendChild(items[i]);
+              if (checkOverflow()) {
+                // This item caused overflow, remove it
+                listForCurrentPage.removeChild(items[i]);
+                splitIndex = i;
+                break;
+              }
+            }
+            
+            if (splitIndex !== -1) {
+              // Create new page and build remaining list
+              createPage();
+              const listForNextPage = el.cloneNode(false);
+              for (let i = splitIndex; i < items.length; i++) {
+                listForNextPage.appendChild(items[i]);
+              }
+              // Insert the next-page list back into elements array to process it next
+              elements.splice(idx + 1, 0, listForNextPage);
+            }
+          }
+        } else {
+          // Normal element (paragraph, heading, figure, table, callout)
+          currentPageBody.appendChild(el);
+          
+          if (checkOverflow()) {
+            if (currentPageBody.children.length > 1) {
+              currentPageBody.removeChild(el);
+              
+              // Orphan heading protection: if the last element in current page is a heading,
+              // we move it to the next page as well to keep it with its content
+              const lastChild = currentPageBody.lastElementChild;
+              const isHeading = lastChild && ['H1', 'H2', 'H3', 'H4'].includes(lastChild.tagName);
+              
+              if (isHeading && currentPageBody.children.length > 1) {
+                currentPageBody.removeChild(lastChild);
+                createPage();
+                currentPageBody.appendChild(lastChild);
+                currentPageBody.appendChild(el);
+              } else {
+                createPage();
+                currentPageBody.appendChild(el);
+              }
+            }
+          }
+        }
+      }
     });
 
     // Save restructured HTML back to disk for debugging/verifying
