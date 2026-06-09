@@ -273,13 +273,23 @@ const server = http.createServer(async (req, res) => {
           return match ? match[1] : '';
         });
 
-        // Find header logo by searching for img src in header element or style (fallback to typical header logo base64 if needed)
-        // Since we assemble it dynamically in n8n, we will pull it from the HTML itself or from a standard variable
-        const headerLogoBase64 = await page.evaluate(() => {
-          // Look for any logo element or check global window configuration
-          const img = document.querySelector('img[src^="data:image"]');
-          return img ? img.src : 'https://anujjindal.in/wp-content/uploads/2022/05/LOGO-FULL-01.png';
-        });
+        // Read header logo from local file and convert to base64 for reliable printing in headers
+        let headerLogoBase64 = '';
+        try {
+          const logoPath = path.join(__dirname, 'Anuj Jindal Task', 'header_logo.png');
+          if (fs.existsSync(logoPath)) {
+            const logoBuffer = fs.readFileSync(logoPath);
+            headerLogoBase64 = `data:image/png;base64,${logoBuffer.toString('base64')}`;
+            console.log('[pdf-server] Successfully loaded local header logo as base64.');
+          }
+        } catch (err) {
+          console.error('[pdf-server] Error reading local header logo:', err.message);
+        }
+
+        // Fallback if local file not found
+        if (!headerLogoBase64) {
+          headerLogoBase64 = 'https://anujjindal.in/wp-content/uploads/2022/05/LOGO-FULL-01.png';
+        }
 
         const headerTemplate = `
           <div style="font-family: 'Montserrat', 'Inter', sans-serif; font-size: 7.5px; width: 100%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #1B71AC; padding-bottom: 4px; padding-left: 40px; padding-right: 40px; box-sizing: border-box; -webkit-print-color-adjust: exact;">
