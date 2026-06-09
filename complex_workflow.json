@@ -1,0 +1,243 @@
+{
+  "name": "Production PDF Microservice & Distribution Workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "manual-trigger-prod",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        100,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "path": "trigger-pdf-generation",
+        "options": {}
+      },
+      "id": "webhook-trigger-prod",
+      "name": "Webhook Trigger (CI/CD)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        100,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "filePath": "D:/n8n_pdf/Anuj Jindal Task/Notes Economic Growth and Development 118b820004a246028d53c0d80e25b5f3.html",
+        "dataPropertyName": "htmlData"
+      },
+      "id": "read-html-file-prod",
+      "name": "Load Source HTML",
+      "type": "n8n-nodes-base.readBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        320,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:3000/render-pdf",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyFormat": "multipart",
+        "parametersToSend": {
+          "parameter": [
+            {
+              "name": "htmlFile",
+              "parameterType": "formBinaryData",
+              "inputDataFieldName": "htmlData"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "pdfData"
+            }
+          }
+        },
+        "responseData": "file",
+        "responseBinaryPropertyName": "pdfData"
+      },
+      "id": "http-request-pdf-service",
+      "name": "Call PDF Microservice",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        540,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $binary.pdfData.mimeType }}",
+              "value2": "application/pdf"
+            }
+          ]
+        }
+      },
+      "id": "if-valid-pdf",
+      "name": "Validate PDF Response",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        760,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "fileName": "D:/n8n_pdf/Economic Growth and Development.pdf",
+        "binaryPropertyName": "pdfData"
+      },
+      "id": "write-pdf-file-prod",
+      "name": "Save PDF to Disk",
+      "type": "n8n-nodes-base.writeBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        980,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "infoMessage": "PDF generated and saved successfully!"
+      },
+      "id": "success-log-node",
+      "name": "Success Summary",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "errorMessage": "PDF generation failed or returned invalid content type."
+      },
+      "id": "fail-log-node",
+      "name": "Error Handler",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        980,
+        400
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "error-trigger-prod",
+      "name": "Error Trigger (System Alert)",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        760,
+        560
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Load Source HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Trigger (CI/CD)": {
+      "main": [
+        [
+          {
+            "node": "Load Source HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Source HTML": {
+      "main": [
+        [
+          {
+            "node": "Call PDF Microservice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call PDF Microservice": {
+      "main": [
+        [
+          {
+            "node": "Validate PDF Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate PDF Response": {
+      "main": [
+        [
+          {
+            "node": "Save PDF to Disk",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Handler",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save PDF to Disk": {
+      "main": [
+        [
+          {
+            "node": "Success Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Trigger (System Alert)": {
+      "main": [
+        [
+          {
+            "node": "Error Handler",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "staticData": null,
+  "meta": {
+    "templateId": ""
+  },
+  "pinData": {}
+}

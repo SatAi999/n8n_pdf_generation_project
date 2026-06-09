@@ -501,6 +501,41 @@ Project Root
 
 ---
 
+# Getting Started & Running the Workflow
+
+Follow these steps to run the n8n workflow locally on your system:
+
+## Step 1: Start n8n with Required Permissions
+By default, n8n restricts local command execution and blocks file system access outside of the user's home directory. To run this workflow, n8n must be started with environment variables that allow executing the PDF generation script and reading the resulting PDF.
+
+Use one of the helper scripts in the project root to start n8n:
+*   **On Command Prompt (cmd.exe):** Double-click or run `run_n8n.bat`
+*   **On PowerShell:** Run `.\run_n8n.ps1`
+
+Both scripts configure the environment and start n8n on port `5678`:
+```cmd
+set N8N_ENFORCE_SETTINGS_FILE_FOR_CAN_EXECUTE_COMMAND=false
+set NODES_EXCLUDE=[]
+set N8N_RESTRICT_FILE_ACCESS_TO=%~dp0;C:\Users\Satwik\.n8n-files
+n8n
+```
+
+## Step 2: Open n8n in Your Browser
+Open your browser and navigate to:
+[http://localhost:5678/](http://localhost:5678/)
+
+## Step 3: Import the Workflow
+1. In the n8n UI, click on the **Workflows** tab or create a new empty workflow.
+2. Click the **three dots menu** (top right corner of the canvas) and select **Import from File**.
+3. Choose the [workflow.json](file:///d:/n8n_pdf/workflow.json) file located in this project directory.
+
+## Step 4: Execute the Workflow
+1. Click the **Execute workflow** button at the bottom of the screen.
+2. Once execution finishes, click on the **Read Generated PDF** node.
+3. Switch to the **Binary** tab in the output panel to view, download, or review the generated PDF binary file.
+
+---
+
 # Conclusion
 
 This project demonstrates how workflow automation, browser rendering technology, and custom document engineering techniques can be combined to create a fully automated publishing solution.
@@ -508,3 +543,4 @@ This project demonstrates how workflow automation, browser rendering technology,
 By integrating n8n, Node.js, and Puppeteer, the pipeline transforms raw content exports into professionally formatted educational documents with minimal manual effort, consistent branding, reliable pagination, and publication-grade visual quality.
 
 The solution is scalable, maintainable, and suitable for enterprise-level document generation workflows.
+

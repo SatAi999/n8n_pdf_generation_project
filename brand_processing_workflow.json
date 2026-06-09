@@ -1,0 +1,357 @@
+{
+  "name": "Visual Brand Processing & PDF Generation Workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "manual-trigger-visual",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        100,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "headerLogoUrl",
+              "value": "https://anujjindal.in/wp-content/uploads/2022/05/LOGO-FULL-01.png"
+            },
+            {
+              "name": "watermarkLogoUrl",
+              "value": "https://anujjindal.in/wp-content/uploads/2023/02/LOGO-CROP.png"
+            },
+            {
+              "name": "htmlPath",
+              "value": "D:/n8n_pdf/Anuj Jindal Task/Notes Economic Growth and Development 118b820004a246028d53c0d80e25b5f3.html"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-brand-config",
+      "name": "Set Brand Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        260,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.headerLogoUrl }}",
+        "responseData": "file",
+        "responseBinaryPropertyName": "headerLogo",
+        "options": {}
+      },
+      "id": "fetch-header-logo",
+      "name": "Fetch Header Logo",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        480,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.watermarkLogoUrl }}",
+        "responseData": "file",
+        "responseBinaryPropertyName": "watermarkLogo",
+        "options": {}
+      },
+      "id": "fetch-watermark-logo",
+      "name": "Fetch Watermark Logo",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        480,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "mergeByPosition",
+        "options": {}
+      },
+      "id": "merge-logo-encodes",
+      "name": "Merge Logo Encodes",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [
+        700,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "filePath": "={{ $('Set Brand Configuration').item.json.htmlPath }}",
+        "dataPropertyName": "htmlFile"
+      },
+      "id": "load-raw-html-content",
+      "name": "Load Raw HTML Content1",
+      "type": "n8n-nodes-base.readBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        860,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const htmlItem = $input.first();\n\nconst headerItem = $('Fetch Header Logo').first();\nconst watermarkItem = $('Fetch Watermark Logo').first();\n\nconst headerBuffer = await this.helpers.getBinaryDataBuffer(0, 'data', headerItem);\nconst watermarkBuffer = await this.helpers.getBinaryDataBuffer(0, 'data', watermarkItem);\nconst htmlBuffer = await this.helpers.getBinaryDataBuffer(0, 'htmlFile', htmlItem);\n\nconst headerBase64 = 'data:image/png;base64,' + headerBuffer.toString('base64');\nconst watermarkBase64 = 'data:image/png;base64,' + watermarkBuffer.toString('base64');\nconst htmlString = htmlBuffer.toString('utf8');\n\nreturn [{\n  json: {\n    html: htmlString,\n    headerLogo: headerBase64,\n    watermarkLogo: watermarkBase64\n  }\n}];"
+      },
+      "id": "assemble-final-data",
+      "name": "Assemble Final Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1020,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nlet htmlContent = item.html;\nconst watermarkLogoBase64 = item.watermarkLogo;\nconst headerLogoBase64 = item.headerLogo;\n\nconst customCSS = `\n  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap');\n  \n  html, body {\n    margin: 0;\n    padding: 0;\n    -webkit-print-color-adjust: exact;\n    box-sizing: border-box;\n  }\n  \n  body {\n    font-family: 'Inter', sans-serif;\n    color: #2b2b2b;\n    line-height: 1.35;\n    background-color: #ffffff;\n    padding: 0;\n  }\n  \n  .page {\n    width: 100% !important;\n    height: 960px !important;\n    page-break-after: always !important;\n    break-after: page !important;\n    box-sizing: border-box !important;\n    overflow: hidden !important;\n    position: relative !important;\n  }\n  \n  .page-body {\n    column-count: 2 !important;\n    column-gap: 28px !important;\n    height: 100% !important;\n    column-fill: auto !important;\n    box-sizing: border-box !important;\n  }\n  \n  .page-title-banner {\n    background-color: #2AB573;\n    color: #ffffff;\n    padding: 8px 12px;\n    font-family: 'Montserrat', sans-serif;\n    font-size: 13px;\n    font-weight: 800;\n    text-transform: uppercase;\n    margin-bottom: 12px;\n    border-radius: 4px;\n    column-span: all;\n    -webkit-column-span: all;\n  }\n  \n  .index-box {\n    background-color: rgba(42, 181, 115, 0.03);\n    border: 1px solid rgba(42, 181, 115, 0.15);\n    border-radius: 6px;\n    padding: 10px 14px;\n    margin-bottom: 18px;\n    column-span: all;\n    -webkit-column-span: all;\n    box-sizing: border-box;\n  }\n  \n  .index-title {\n    font-family: 'Montserrat', sans-serif;\n    font-size: 9px;\n    font-weight: 700;\n    color: #2AB573;\n    text-transform: uppercase;\n    margin-bottom: 6px;\n    letter-spacing: 0.5px;\n  }\n  \n  .index-list {\n    column-count: 2;\n    column-gap: 24px;\n    list-style-type: none;\n    padding: 0;\n    margin: 0;\n  }\n  \n  .index-item {\n    font-size: 7.5px;\n    line-height: 1.35;\n    margin-bottom: 3px;\n    color: #333333;\n    break-inside: avoid;\n    -webkit-column-break-inside: avoid;\n  }\n  \n  .index-link {\n    text-decoration: none;\n    color: inherit;\n    font-weight: 500;\n  }\n  \n  .index-link:hover {\n    color: #1B71AC;\n  }\n  \n  .index-item-sub {\n    padding-left: 10px;\n    color: #555555;\n  } \n  \n  h1, h2, h3 {\n    font-family: 'Montserrat', sans-serif;\n    color: #1B71AC;\n    font-weight: 700;\n    margin-top: 15px;\n    margin-bottom: 8px;\n    break-inside: avoid;\n    -webkit-column-break-inside: avoid;\n    page-break-after: avoid;\n    break-after: avoid;\n  }\n  \n  h1 {\n    font-size: 12px;\n    text-transform: uppercase;\n  }\n  \n  h2 {\n    font-size: 11px;\n  }\n  \n  h3 {\n    font-size: 9.5px;\n    margin-top: 10px;\n    margin-bottom: 6px;\n  }\n  \n  p, li {\n    font-size: 8.5px;\n    color: #333333;\n    margin-top: 0;\n    margin-bottom: 5px;\n  }\n  \n  .bulleted-list, .numbered-list {\n    padding-left: 14px;\n    margin-top: 3px;\n    margin-bottom: 6px;\n  }\n  \n  li {\n    margin-bottom: 3px;\n  }\n  \n  li ul {\n    list-style-type: circle !important;\n    padding-left: 10px;\n  }\n  \n  .callout {\n    border: 1.5px solid #2AB573 !important;\n    background-color: rgba(42, 181, 115, 0.05) !important;\n    border-radius: 6px !important;\n    padding: 10px 12px !important;\n    margin: 12px 0 !important;\n    display: block !important;\n    break-inside: avoid !important;\n    -webkit-column-break-inside: avoid !important;\n    page-break-inside: avoid !important;\n  }\n  \n  .callout-header {\n    color: #2AB573 !important;\n    display: block !important;\n    font-size: 8.5px !important;\n    font-weight: 700 !important;\n    margin-bottom: 3px !important;\n    font-family: 'Montserrat', sans-serif !important;\n    text-transform: uppercase !important;\n    letter-spacing: 0.5px !important;\n  }\n  \n  .callout-title {\n    color: #111111 !important;\n    display: block !important;\n    font-size: 8.5px !important;\n    font-weight: 700 !important;\n    margin-bottom: 5px !important;\n    font-family: 'Montserrat', sans-serif !important;\n  }\n  \n  .callout-content {\n    font-size: 7.5px !important;\n    color: #2b2b2b !important;\n  }\n  \n  .callout-content li {\n    font-size: 7.5px !important;\n    margin-bottom: 2px !important;\n    color: #2b2b2b !important;\n  }\n  \n  table {\n    width: 100% !important;\n    border-collapse: collapse !important;\n    margin: 12px 0 !important;\n    font-size: 7.5px !important;\n    break-inside: avoid !important;\n    -webkit-column-break-inside: avoid !important;\n    page-break-inside: avoid !important;\n  }\n  \n  th {\n    background-color: #1B71AC !important;\n    color: #ffffff !important;\n    font-weight: 700 !important;\n    text-align: left !important;\n    padding: 5px 6px !important;\n    border: 1px solid #1B71AC !important;\n    font-family: 'Montserrat', sans-serif;\n  }\n  \n  td {\n    padding: 5px 6px !important;\n    border: 1px solid #e0e0e0 !important;\n  }\n  \n  tr:nth-child(even) {\n    background-color: #f7fafc !important;\n  }\n  \n  figure.image {\n    margin: 10px 0 !important;\n    text-align: center !important;\n    break-inside: avoid !important;\n    -webkit-column-break-inside: avoid !important;\n    page-break-inside: avoid !important;\n  }\n  \n  figure.image img, img {\n    width: 100% !important;\n    max-width: 100% !important;\n    height: auto !important;\n    object-fit: contain !important;\n    border-radius: 4px !important;\n    display: inline-block !important;\n    border: none !important;\n    box-shadow: none !important;\n  }\n  \n  figure.image img.img-growth, img.img-growth {\n    width: 140px !important;\n  }\n  figure.image img.img-oecd, img.img-oecd {\n    width: 130px !important;\n  }\n  figure.image img.img-happiness, img.img-happiness {\n    width: 140px !important;\n  }\n  figure.image img.img-composite, img.img-composite {\n    width: 110px !important;\n  }\n  \n  mark.highlight-orange_background {\n    background-color: rgba(27, 113, 172, 0.08) !important;\n    color: #1B71AC !important;\n    font-weight: 600;\n    padding: 1px 2px;\n    border-radius: 2px;\n  }\n  \n  mark.highlight-red {\n    color: #eb5757 !important;\n    background-color: rgba(235, 87, 87, 0.06) !important;\n    font-weight: 600;\n    padding: 1px 2px;\n    border-radius: 2px;\n  }\n  \n  mark.highlight-blue {\n    color: #1B71AC !important;\n    background: none !important;\n    font-weight: 700;\n  }\n  \n  mark.highlight-teal {\n    color: #2AB573 !important;\n    background: none !important;\n    font-weight: 700;\n  }\n  \n  strong {\n    color: #111111;\n    font-weight: 700;\n  }\n  \n  .watermark {\n    position: fixed;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    width: 550px;\n    height: 550px;\n    opacity: 0.15;\n    z-index: -1000;\n    pointer-events: none;\n    background-image: url('${watermarkLogoBase64}');\n    background-size: contain;\n    background-repeat: no-repeat;\n    background-position: center;\n  }\n`;\n\nhtmlContent = htmlContent.replace(/<style>[^]*?<\\/style>/, '<style>' + customCSS + '</style>');\nconst watermarkDiv = '<div class=\"watermark\"></div>';\nhtmlContent = htmlContent.replace(/<body[^>]*>/, (match) => match + watermarkDiv);\n\nreturn [{\n  json: {\n    htmlContent: htmlContent\n  }\n}];"
+      },
+      "id": "build-branded-html",
+      "name": "Build Branded HTML1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1180,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:3000/render-pdf",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "text/html",
+        "body": "={{ $json.htmlContent }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "data"
+            }
+          }
+        },
+        "responseData": "file",
+        "responseBinaryPropertyName": "data"
+      },
+      "id": "http-convert-html-to-pdf",
+      "name": "Convert HTML to PDF1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1340,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $binary.data.mimeType }}",
+              "value2": "application/pdf"
+            }
+          ]
+        }
+      },
+      "id": "validate-pdf-response-visual",
+      "name": "Validate PDF Response",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "fileName": "D:/n8n_pdf/Economic Growth and Development.pdf",
+        "binaryPropertyName": "data"
+      },
+      "id": "write-pdf-file-visual",
+      "name": "Save PDF to Disk",
+      "type": "n8n-nodes-base.writeBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        1680,
+        140
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "success-summary-visual",
+      "name": "Success Summary",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1860,
+        140
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "error-handler-visual",
+      "name": "Error Handler",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1680,
+        340
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Brand Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Brand Configuration": {
+      "main": [
+        [
+          {
+            "node": "Fetch Header Logo",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch Watermark Logo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Header Logo": {
+      "main": [
+        [
+          {
+            "node": "Merge Logo Encodes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Watermark Logo": {
+      "main": [
+        [
+          {
+            "node": "Merge Logo Encodes",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Logo Encodes": {
+      "main": [
+        [
+          {
+            "node": "Load Raw HTML Content1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Raw HTML Content1": {
+      "main": [
+        [
+          {
+            "node": "Assemble Final Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assemble Final Data": {
+      "main": [
+        [
+          {
+            "node": "Build Branded HTML1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Branded HTML1": {
+      "main": [
+        [
+          {
+            "node": "Convert HTML to PDF1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert HTML to PDF1": {
+      "main": [
+        [
+          {
+            "node": "Validate PDF Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate PDF Response": {
+      "main": [
+        [
+          {
+            "node": "Save PDF to Disk",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Handler",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save PDF to Disk": {
+      "main": [
+        [
+          {
+            "node": "Success Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "staticData": null,
+  "meta": {
+    "templateId": ""
+  },
+  "pinData": {}
+}

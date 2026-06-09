@@ -1,5 +1,5 @@
 {
-  "name": "Production-Grade PDF Generation and Distribution Workflow",
+  "name": "Local PDF Generation Workflow",
   "nodes": [
     {
       "parameters": {},
@@ -7,101 +7,40 @@
       "name": "When clicking \"Execute\"",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
-      "position": [100, 240]
+      "position": [
+        100,
+        240
+      ]
     },
     {
       "parameters": {
-        "path": "generate-pdf",
-        "options": {}
-      },
-      "id": "webhook-trigger-id",
-      "name": "Webhook Trigger",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 1,
-      "position": [100, 400]
-    },
-    {
-      "parameters": {
-        "command": "node d:\\n8n_pdf\\generate_pdf.js"
+        "command": "node D:/n8n_pdf/generate_pdf.js"
       },
       "id": "execute-command-id",
       "name": "Generate PDF Script",
       "type": "n8n-nodes-base.executeCommand",
       "typeVersion": 1,
-      "position": [320, 320]
+      "position": [
+        320,
+        240
+      ]
     },
     {
       "parameters": {
-        "filePath": "d:\\n8n_pdf\\Economic Growth and Development.pdf"
+        "filePath": "D:/n8n_pdf/Economic Growth and Development.pdf"
       },
       "id": "read-file-id",
       "name": "Read Generated PDF",
       "type": "n8n-nodes-base.readBinaryFile",
       "typeVersion": 1,
-      "position": [520, 320]
-    },
-    {
-      "parameters": {
-        "authentication": "oAuth2",
-        "operation": "upload",
-        "fileContentOf": "data",
-        "name": "Economic Growth and Development.pdf",
-        "parents": [
-          "root"
-        ],
-        "options": {}
-      },
-      "id": "gdrive-upload-id",
-      "name": "Upload to Google Drive",
-      "type": "n8n-nodes-base.googleDrive",
-      "typeVersion": 2,
-      "position": [720, 200]
-    },
-    {
-      "parameters": {
-        "sendTo": "recruiter@company.com",
-        "subject": "Economic Growth and Development Study Notes",
-        "emailType": "text",
-        "message": "Hi,\n\nPlease find attached the formatted PDF containing the comprehensive study notes on Economic Growth and Development.\n\nBest regards,\nCandidate",
-        "binaryCol": "data",
-        "options": {
-          "cc": "",
-          "bcc": ""
-        }
-      },
-      "id": "gmail-send-id",
-      "name": "Email Recruiter via Gmail",
-      "type": "n8n-nodes-base.gmail",
-      "typeVersion": 2,
-      "position": [720, 440]
-    },
-    {
-      "parameters": {
-        "select": "channel",
-        "channelId": "C0123456789",
-        "text": ":rocket: *PDF Generation Success*\nStudy notes PDF on *Economic Growth and Development* has been successfully compiled and uploaded to Google Drive, and emailed to the recruiter.",
-        "otherOptions": {}
-      },
-      "id": "slack-notify-id",
-      "name": "Send Slack Alert",
-      "type": "n8n-nodes-base.slack",
-      "typeVersion": 2,
-      "position": [950, 320]
+      "position": [
+        540,
+        240
+      ]
     }
   ],
   "connections": {
     "When clicking \"Execute\"": {
-      "main": [
-        [
-          {
-            "node": "Generate PDF Script",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Webhook Trigger": {
       "main": [
         [
           {
@@ -117,44 +56,6 @@
         [
           {
             "node": "Read Generated PDF",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Read Generated PDF": {
-      "main": [
-        [
-          {
-            "node": "Upload to Google Drive",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Email Recruiter via Gmail",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Upload to Google Drive": {
-      "main": [
-        [
-          {
-            "node": "Send Slack Alert",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Email Recruiter via Gmail": {
-      "main": [
-        [
-          {
-            "node": "Send Slack Alert",
             "type": "main",
             "index": 0
           }
